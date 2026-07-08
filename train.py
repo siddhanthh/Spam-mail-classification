@@ -32,6 +32,8 @@ def main():
     
     X_train = torch.tensor(X_train_raw, dtype=torch.float32)
     y_train = torch.tensor(y_train_raw, dtype=torch.float32).unsqueeze(1)
+    X_test = torch.tensor(X_test_raw, dtype=torch.float32)
+    y_test = torch.tensor(y_test_raw, dtype=torch.float32).unsqueeze(1)
     
     model = Model()
     criterion = nn.BCELoss()
@@ -52,6 +54,31 @@ def main():
             
     torch.save(model.state_dict(), 'model.pth')
     print("Model saved to model.pth successfully.")
+    
+    # Evaluate model accuracy on test set
+    model.eval()
+    with torch.no_grad():
+        y_test_pred = model(X_test)
+        y_test_pred_class = (y_test_pred >= 0.5).float()
+        
+        correct = (y_test_pred_class == y_test).sum().item()
+        total = y_test.size(0)
+        accuracy = correct / total
+        print(f"\n--- Model Evaluation ---")
+        print(f"Test Set Accuracy: {accuracy:.2%}")
+        
+        # Calculate true positives, false positives, false negatives
+        tp = ((y_test_pred_class == 1) & (y_test == 1)).sum().item()
+        fp = ((y_test_pred_class == 1) & (y_test == 0)).sum().item()
+        fn = ((y_test_pred_class == 0) & (y_test == 1)).sum().item()
+        
+        precision = tp / (tp + fp) if (tp + fp) > 0 else 0.0
+        recall = tp / (tp + fn) if (tp + fn) > 0 else 0.0
+        f1 = 2 * (precision * recall) / (precision + recall) if (precision + recall) > 0 else 0.0
+        
+        print(f"Precision: {precision:.2%}")
+        print(f"Recall: {recall:.2%}")
+        print(f"F1-Score: {f1:.2%}")
 
 if __name__ == '__main__':
     main()
