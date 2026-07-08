@@ -4,18 +4,24 @@ import numpy as np
 import torch
 import torch.nn as nn
 from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import StandardScaler
 import os
+import pickle
 
 class Model(nn.Module):
-    def __init__(self, in_features=57, h1=8, h2=9, out_features=1):
+    def __init__(self, in_features=57, h1=32, h2=16, out_features=1):
         super().__init__()
         self.fc1 = nn.Linear(in_features, h1)
+        self.dropout1 = nn.Dropout(0.2)
         self.fc2 = nn.Linear(h1, h2)
+        self.dropout2 = nn.Dropout(0.2)
         self.out = nn.Linear(h2, out_features)
     
     def forward(self, x):
         x = torch.relu(self.fc1(x))
+        x = self.dropout1(x)
         x = torch.relu(self.fc2(x))
+        x = self.dropout2(x)
         x = torch.sigmoid(self.out(x))
         return x
 
@@ -31,9 +37,16 @@ def main():
     
     X_train_raw, X_test_raw, y_train_raw, y_test_raw = train_test_split(X, y, test_size=0.2, random_state=42)
     
-    X_train = torch.tensor(X_train_raw, dtype=torch.float32)
+    scaler = StandardScaler()
+    X_train_scaled = scaler.fit_transform(X_train_raw)
+    X_test_scaled = scaler.transform(X_test_raw)
+    
+    with open('scaler.pkl', 'wb') as f:
+        pickle.dump(scaler, f)
+        
+    X_train = torch.tensor(X_train_scaled, dtype=torch.float32)
     y_train = torch.tensor(y_train_raw, dtype=torch.float32).unsqueeze(1)
-    X_test = torch.tensor(X_test_raw, dtype=torch.float32)
+    X_test = torch.tensor(X_test_scaled, dtype=torch.float32)
     y_test = torch.tensor(y_test_raw, dtype=torch.float32).unsqueeze(1)
     
     model = Model()

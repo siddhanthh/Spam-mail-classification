@@ -3,19 +3,29 @@ import torch
 import torch.nn as nn
 from feature_extractor import extract_features
 import os
+import pickle
 
 class Model(nn.Module):
-    def __init__(self, in_features=57, h1=8, h2=9, out_features=1):
+    def __init__(self, in_features=57, h1=32, h2=16, out_features=1):
         super().__init__()
         self.fc1 = nn.Linear(in_features, h1)
+        self.dropout1 = nn.Dropout(0.2)
         self.fc2 = nn.Linear(h1, h2)
+        self.dropout2 = nn.Dropout(0.2)
         self.out = nn.Linear(h2, out_features)
     
     def forward(self, x):
         x = torch.relu(self.fc1(x))
+        x = self.dropout1(x)
         x = torch.relu(self.fc2(x))
+        x = self.dropout2(x)
         x = torch.sigmoid(self.out(x))
         return x
+
+@st.cache_resource
+def load_scaler():
+    with open('scaler.pkl', 'rb') as f:
+        return pickle.load(f)
 
 @st.cache_resource
 def load_model():
@@ -41,7 +51,9 @@ if st.button("Check Spam", type="primary"):
     else:
         with st.spinner("Analyzing email..."):
             features = extract_features(email_input)
-            features_tensor = torch.tensor([features], dtype=torch.float32)
+            scaler = load_scaler()
+            features_scaled = scaler.transform([features])
+            features_tensor = torch.tensor(features_scaled, dtype=torch.float32)
             
             model = load_model()
             with torch.no_grad():
