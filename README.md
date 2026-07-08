@@ -62,9 +62,17 @@ python train.py
 ```
 This will execute the training loop for 500 epochs, print the evaluation metrics, and overwrite `model.pth`.
 
+## Model Training & Architecture
+The spam classification model is a **Feed-Forward Neural Network** built with PyTorch. It was designed and trained to handle the specific characteristics of the Spambase dataset:
+
+1. **Input Normalization**: The 57 input features vary drastically in scale (e.g., word frequencies vs. long sequences of capital letters). To ensure stable and effective gradient descent, a `StandardScaler` is fit to the training data. This normalizes the inputs, preventing large-scale features from dominating the learning process.
+2. **Network Architecture**: The network takes the 57 scaled features and passes them through two hidden layers (size 32 and 16) with ReLU activations.
+3. **Regularization**: To prevent the model from memorizing the training data (overfitting), `Dropout` layers are applied after each hidden layer.
+4. **Loss Function**: Since this is a binary classification problem (Spam vs. Not Spam), the model uses **Binary Cross Entropy Loss (BCELoss)** coupled with a Sigmoid activation on the output layer.
+
 ## Model Performance
 The current Neural Network achieves the following metrics on the 20% hold-out test set:
-- **Accuracy**: 94.68%
-- **Precision**: 93.83%
-- **Recall**: 93.59%
-- **F1-Score**: 93.71%
+- **Accuracy**: 95.44%
+- **Precision**: 97.03%
+- **Recall**: 92.05%
+- **F1-Score**: 94.47%
