@@ -1,6 +1,6 @@
 # Spam Mail Classifier
 
-An end-to-end Machine Learning web application designed to identify spam emails with high accuracy. This project utilizes a custom PyTorch Feed-Forward Neural Network trained on the Spambase dataset, integrated with a clean and interactive Streamlit web interface.
+An end-to-end Machine Learning web application designed to identify spam emails with high accuracy. This project was developed as a hands-on exercise for learning deep learning concepts using PyTorch. It utilizes a custom Feed-Forward Neural Network trained on the popular Spambase dataset sourced from Kaggle, integrated with a clean and interactive Streamlit web interface.
 
 ## Table of Contents
 - [Features](#features)
