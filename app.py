@@ -49,14 +49,11 @@ if st.button("Check Spam", type="primary"):
             
             st.markdown("### Result")
             if prediction >= 0.5:
-                st.error(f"🚨 **SPAM DETECTED!**")
+                st.error("🚨 **SPAM DETECTED!**")
                 st.write(f"Confidence: {prediction:.2%}")
                 st.progress(prediction)
                 st.info("Tip: Do not click on suspicious links or provide personal information.")
             else:
-                st.success(f"✅ **NOT SPAM**")
+                st.success("✅ **NOT SPAM**")
                 st.write(f"Confidence: {1 - prediction:.2%}")
                 st.progress(1 - prediction)
-
-st.markdown("---")
-st.markdown("Developed as a PyTorch classification project on the Spambase dataset.")
